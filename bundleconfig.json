@@ -1,0 +1,68 @@
+[
+  {
+    "outputFileName": "wwwroot/js/Layout.min.js",
+    "inputFiles": [
+      "wwwroot/js/Layout.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/Translations.min.js",
+    "inputFiles": [
+      "wwwroot/js/Translations.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/MainPages/MainPages.min.js",
+    "inputFiles": [
+      "wwwroot/js/MainPages/MainPages.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/lib/lightpick/lightpick.min.js",
+    "inputFiles": [
+      "wwwroot/lib/lightpick/lightpick.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "wwwroot/lib/lightpick/lightpick.min.css",
+    "inputFiles": [
+      "wwwroot/lib/lightpick/lightpick.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": true
+  },
+  {
+    "outputFileName": "wwwroot/lib/Roboto/Roboto.min.css",
+    "inputFiles": [
+      "wwwroot/lib/Roboto/Roboto.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": true
+  }
+]
