@@ -1,0 +1,15 @@
+@inject ITranslationService translationServicePicker
+@{
+    Html.Assets().Styles.Add("/NewOPAL/lib/lightpick/lightpick.min.css");
+    Html.Assets().Scripts.Add("/NewOPAL/lib/lightpick/moment-with-locales.min.js");
+    Html.Assets().Scripts.Add("/NewOPAL/lib/lightpick/lightpick.min.js");
+}
+<div class="text-center mt-1">
+    <label class="font-weight-bold" id="@ViewBag.labelPicker-Label">
+        <span class="Translation">@translationServicePicker.TranslateWord(translationServicePicker.GetLanguageId(), ViewBag.labelPicker)</span>
+    </label>
+</div>
+<div class="md-form p-2">
+    <i class="far fa-calendar-alt prefix" id="@ViewBag.identifier-CalendarIcon"></i>
+    <input type="text" id="@ViewBag.identifier-DatePicker" class="form-control" autocomplete="off" required="@ViewBag.required">
+</div>
