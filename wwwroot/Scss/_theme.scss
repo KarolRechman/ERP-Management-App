@@ -1,0 +1,170 @@
+﻿
+@mixin theme($light-theme: true) {
+    transition: 0.01s ease-in-out !important;
+    transition-delay: 0 !important;
+
+    i {
+        transition: 0s ease-in-out;
+        transition-delay: 0 !important;
+    }
+
+    @if $light-theme {
+        @include linearGradient($TopColorOrange,$BottomColorOrange,$deg45);
+
+        .fadeInRight {
+            @include linearGradient(opacify($BottomColorOrange,0.15),opacify(darken($TopColorOrange,10%),0.15),$deg45);
+            /*@include linearGradient(opacify(darken($TopColorOrange,20%),0.15),opacify(lighten($BottomColorOrange,15%),0.15),$deg45);*/
+        }
+
+        .md-form input[type]:not(.browser-default) {
+            border-bottom: 1px solid black;
+            //box-shadow: 0 1px 0 0 grey;
+        }
+
+        hr {
+            border-top: 1px solid black;
+        }
+
+        table th {
+            background-color: rgba(225, 225, 225, 0.98);
+        }
+
+        .scroll-TBody {
+            background-color: white;
+        }
+    }
+
+    @else {
+        @include linearGradient($TopColorDark,$BottomColorDark,$deg45);
+        /*#CardHeader {
+            @include linearGradient(opacify(darken($TopColorOrange,20%),0.15),opacify($BottomColorOrange,0.15),$deg45);
+            
+        }*/
+        .fadeInRight {
+            @include linearGradient(opacify(lighten($BottomColorDark,50%),0.1),opacify(lighten($TopColorDark,30%),0.1),$deg45);
+        }
+
+        .md-form input:focus {
+            border-bottom: 1px solid opacify($BottomColorOrange,1) !important;
+            box-shadow: 0 1px 0 0 opacify($BottomColorOrange,1) !important;
+        }
+
+        + label {
+            color: $DarkModeActiveColor !important;
+        }
+
+        .active {
+            color: opacify($BottomColorOrange,1) !important; //$DarkModeActiveColor
+        }
+
+        .form-control, label {
+            color: whitesmoke !important;
+        }
+
+        color: whitesmoke !important;
+
+        hr {
+            border-top: 1px solid whitesmoke;
+        }
+        /*.md-form label {
+            color: whitesmoke;
+        }*/
+        a:not(.dropdown-item) {
+            color: yellow;
+
+            &:hover {
+                color: $DarkModeActiveColor;
+            }
+        }
+
+        table th {
+            background-color: rgba(52, 59, 71, 0.99);
+        }
+
+
+        .scroll-TBody {
+            background-color: black;
+        }
+    }
+}
+
+@mixin for-phone-only {
+    @media (max-width: $Phone) {
+        @content;
+    }
+}
+
+@mixin for-tablet-portrait-up {
+    @media (min-width: $TabletPortrait) {
+        @content;
+    }
+}
+
+@mixin for-tablet-landscape-up {
+    @media (min-width: $TabletLandscape) {
+        @content;
+    }
+}
+
+@mixin for-desktop-up {
+    @media (min-width: $Desktop) {
+        @content;
+    }
+}
+
+@mixin for-big-desktop-up {
+    @media (min-width: 1800px) {
+        @content;
+    }
+}
+
+@mixin linearGradient($top, $bottom, $deg) {
+    background: $top; /* Old browsers */
+    background: -moz-linear-gradient($deg, $bottom 0%, $top 100%) !important; /* FF3.6+ */
+    background: -webkit-gradient(linear, $deg, color-stop(0%,$bottom), color-stop(100%,$top)) !important; /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient($deg, $bottom 0%,$top 100%) !important; /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient($deg, $bottom 0%,$top 100%) !important; /* Opera 11.10+ */
+    background: -ms-linear-gradient($deg, $bottom 0%,$top 100%) !important; /* IE10+ */
+    background: linear-gradient($deg, $bottom 0%,$top 100%) !important; /* W3C */
+    ///////////////////////////////////////////////////////////////////////////////////
+    /*background: -moz-linear-gradient(45deg, rgba(255, 106, 0,0.7), rgba(248,247,206, 0.7) 100%);
+    background: -webkit-linear-gradient(45deg, rgba(255, 106, 0, 0.7), rgba(248,247,206, 0.7) 100%);
+    background: -webkit-gradient(linear, 45deg, from(rgba(255, 106, 0, 0.7)), to(rgba(248,247,206, 0.7)));
+    background: -o-linear-gradient(45deg, rgba(255, 106, 0, 0.7), rgba(248,247,206, 0.7) 100%);
+    background: linear-gradient(to 45deg, rgba(255, 106, 0, 0.7), rgba(248,247,206, 0.7) 100%);*/
+}
+
+@mixin ThemeModePosition($ScreenWidth) {
+    @if $ScreenWidth > 900px {
+        right: 0px;
+        bottom: 5px;
+        border-radius: unset;
+        background-color: unset;
+        z-index: 9;
+    }
+    @else {
+        bottom: 54px;
+        border-radius: 250px 0px 0px 0px;
+        background-color: opacify($BottomColorOrange,1);
+        z-index: 1;
+    }
+}
+
+@mixin MenuPosition() {
+    width: unset;
+    padding-right: unset !important;
+    padding-left: unset !important;
+    transition: 0.5s ease-in-out;
+}
+
+@mixin HeaderNarrow() {
+    position: absolute;
+    @include RoundBorders();
+}
+
+@mixin RoundBorders() {
+    border-top-left-radius: .300rem !important;
+    border-top-right-radius: .300rem !important;
+    border-bottom-right-radius: .300rem !important;
+    border-bottom-left-radius: .300rem !important;
+}
