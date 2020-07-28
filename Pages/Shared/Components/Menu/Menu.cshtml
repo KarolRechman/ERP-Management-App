@@ -1,0 +1,170 @@
+@model MenuNav
+@inject SignInManager<NewOPAL.Models.OpalUser> SignInManager
+@inject UserManager<NewOPAL.Models.OpalUser> UserManager
+@inject ITranslationService translationServiceMenuPartial
+@inject IMenu menu
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessorLayout
+@{
+
+    int? LanguageId = HttpContextAccessorLayout.HttpContext.Session.GetInt32("language");
+
+    if (LanguageId == null)
+    {
+        LanguageId = 1;
+    }
+
+    var user = UserManager.GetUserAsync(User).Result;
+
+    string RightMenuClass = "";
+    string LeftMenuClass = "";
+    string activeMenu = "";
+    string activeCogs = "";
+    if (HttpContextAccessorLayout.HttpContext.Session.GetInt32("ShowRightMenu") == 1)
+    {
+        RightMenuClass = "ShowRightMenu";
+        activeCogs = "text-dark";
+    }
+    else
+    {
+        activeCogs = "text-white";
+        RightMenuClass = "";
+    }
+    @if (HttpContextAccessorLayout.HttpContext.Session.GetInt32("ShowLeftMenu") == 1)
+    {
+        activeMenu = "text-dark";
+        LeftMenuClass = "ShowLeftMenu";
+    }
+    else
+    {
+        activeMenu = "text-white";
+        LeftMenuClass = "";
+    }
+
+}
+<nav class="navbar navbar-expand-sm navbar-dark fixed-top scrolling-navbar">
+    <div class="container">
+        <a class="navbar-brand" asp-area="Main" asp-page="Welcome">
+            <strong style="font-family:Arial Black; font-size:large; color:white;">Let<span style="color: black;">Me</span>Repair </strong>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-7" aria-controls="navbarSupportedContent-7" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent-7">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <span class="Block font-italic font-weight-bolder"><span class="Translation">@translationServiceMenuPartial.TranslateWord(LanguageId, "Hello") </span> @user.FirstName !</span>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link @activeMenu" id="sidenavLeft">
+                        Menu<i class=" fas fa-ellipsis-v"></i>
+                        <span class="sr-only">(current)</span>
+                    </span>
+                </li>
+            </ul>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Account/Login", new { area = "Identity" })" method="post" id="logoutForm" class="form-inline">
+                    <ul class="nav navbar-nav navbar-right">
+
+                        <li class="nav-item">
+                            <button type="submit" id="LogoutButton" class="nav-link btn btn-dark btn-sm"><span class="font-weight-bold Translation">@translationServiceMenuPartial.TranslateWord(LanguageId, "Logout")</span> <i class="fas fa-sign-out-alt"></i></button>
+                        </li>
+                    </ul>
+                </form>
+                <span id="sidenavRight" class="@activeCogs px-1"><i class="fa-2x fas fa-cogs"></i></span>
+            }
+        </div>
+    </div>
+</nav>
+
+
+<div id="RightSidenav" class="sidenav right @RightMenuClass">
+
+    <div class="px-4">
+        <span id="closebtnLeft" class="closebtn">&times;</span>
+        <div class="text-center MinH100px">
+            <label class="Translation font-weight-bolder" id="LanguageLabel">@translationServiceMenuPartial.TranslateWord(LanguageId, "Language")</label>
+            <select id="Language" class="selectpicker mb-2" data-width="100%">
+                @foreach (var language in Model.Languages)
+                {
+                    if (LanguageId == language.IdLanguage)
+                    {
+                        <option value="@language.IdLanguage" selected>
+                            @language.NativeName
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@language.IdLanguage">
+                            @language.NativeName
+                        </option>
+                    }
+                }
+            </select>
+        </div>
+        <hr />
+        <div class="col-12 material-toggle d-flex justify-content-end align-items-center align-self-end mt-auto pr-5">
+            <h6 class="mr-4 Translation font-weight-bolder">@translationServiceMenuPartial.TranslateWord(LanguageId, "Dark Mode")</h6>
+            <input id="MaterialToggleBlue" name="MaterialToggleBlue" type="checkbox" />
+            <label for="MaterialToggleBlue" class="label-blue"></label>
+        </div>
+    </div>
+
+</div>
+
+<div id="LeftSidenav" class="sidenav left @LeftMenuClass">
+
+    <div class="text-center px-4 MinH100px">
+        <label class="font-weight-bolder" id="ComapanyLabel">
+            <span class="Translation">@translationServiceMenuPartial.TranslateWord(LanguageId, "Company")</span>
+            <span id="closebtnRight" class="closebtn">&times;</span>
+        </label>
+        <select id="CompanySelect" class="selectpicker mb-2" data-width="100%" data-container="body">
+            @{
+                int? IdCompany = menu.GetMenuCompany();
+            }
+            @foreach (var company in Model.Companies)
+            {
+                if (IdCompany != null)
+                {
+                    if (IdCompany == company.Id)
+                    {
+                        <option value="@company.Id" selected>
+                            @company.Description
+                        </option>
+                    }
+                    else
+                    {
+                        <option value="@company.Id">
+                            @company.Description
+                        </option>
+                    }
+                }
+                else
+                {
+                    if (company.Id == user.IdMandant)
+                    {
+                        <option value="@company.Id" selected>
+                            @company.Description
+                        </option>
+                        menu.SetMenuCompany(company.Id);
+                    }
+                    else
+                    {
+                        <option value="@company.Id">
+                            @company.Description
+                        </option>
+                    }
+                }
+            }
+        </select>
+    </div>
+
+    <div class="text-left" id="MenuLinks">
+        @await Component.InvokeAsync("AccordionMenu", new { menuLinks = Model.MenuParents, firstCall = true })
+    </div>
+</div>
+
+
+
+<!-- Use any element to open the sidenav -->
