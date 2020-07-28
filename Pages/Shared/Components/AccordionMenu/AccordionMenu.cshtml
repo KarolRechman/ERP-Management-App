@@ -1,0 +1,149 @@
+@model List<MenuLink>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessorAccordion
+@inject IMenu menuService;
+@{
+    String Route = ViewContext.RouteData.Values["area"].ToString();
+    String pageRoute = ViewContext.RouteData.Values["page"].ToString().Replace("/", "");
+    string activeClass = "";
+    string show = "";
+    string collapsed = "";
+    string RotateArrow = "";
+    int id = Model.First().IdMenu;
+    string AccordionStyle = "";
+    string iconClass = "";
+    var Name = menuService.GetMenuName(pageRoute);
+
+}
+
+@if (ViewBag.firstCall == true)
+{
+    AccordionStyle = "pb-5 mb-5";
+}
+else
+{
+    AccordionStyle = "";
+}
+<!--Accordion wrapper-->
+<div class="accordion md-accordion @AccordionStyle" id="MenuLeft_@id" role="tablist" aria-multiselectable="true">
+    <!-- Accordion card -->
+    @foreach (var parent in Model)
+    {
+        string partName = "MenuDiv_" + parent.IdMenu.ToString();
+
+        //if (Route != "Main")
+        //{
+        @if (parent.Links.Any(l => l.MenuName == Name) == true)
+        {
+            show = "show";
+            RotateArrow = "RotateArrow";
+            iconClass = "far fa-minus-square";
+        }
+        else
+        {
+            @if (parent.Links.Any(l => l.Links.Any(x => x.MenuName == Name)) == true)
+            {
+                show = "show";
+                RotateArrow = "RotateArrow";
+                iconClass = "far fa-minus-square";
+                collapsed = "";
+            }
+            else
+            {
+                show = "";
+                RotateArrow = "";
+                iconClass = "far fa-plus-square";
+                collapsed = "collapsed";
+            }
+        }
+        @* } *@
+
+        int padding = 1 + Convert.ToInt16(ViewBag.padding);
+        string paddingStyle = "pl-" + padding.ToString();
+        var ParentWithChildren = parent.Links.Where(l => l.Links.Count > 0).ToList();
+        string rgba4Heading = "";
+        if (ParentWithChildren.Count > 0)
+        {
+            rgba4Heading = "rgba-stylish-light border-bottom border-warning";
+        }
+        <div class="Menu">
+            <!-- Card header -->
+            <div class="waves-effect @paddingStyle @rgba4Heading" role="tab" id="heading_@partName">
+                <div class="@collapsed py-2 px-3 Area" data-toggle="collapse" data-parent="#MenuLeft_@id" href="#@partName" aria-expanded="false" aria-controls="@partName">
+                    <span class="@paddingStyle float-left"><i class="@iconClass"></i></span><span class="font-weight-bold pl-2">
+                        @parent.MenuName<span class="float-right"> <i id="Icon_@partName" class="fas fa-angle-down rotate-icon Rotate @RotateArrow"></i></span>
+                    </span>
+                </div>
+            </div>
+            <!-- Card body -->
+
+            <div id="@partName" class="collapse @show" role="tabpanel" aria-labelledby="heading_@partName" data-parent="#MenuLeft_@id">
+
+                @foreach (var child in ParentWithChildren)
+                {
+                    <div class="accordion md-accordion" id="MenuLeft_@parent.IdMenu" role="tablist" aria-multiselectable="true">
+                        @await Component.InvokeAsync("AccordionMenu", new { menuLinks = ParentWithChildren, firstCall = false, padding = padding })
+                    </div>
+
+                    break;
+                }
+                @foreach (var child in parent.Links.Where(l => l.Links.Count == 0))
+                {
+                    //var Name = string.Concat(pageRoute.Select(c => char.IsUpper(c) ? " " + c.ToString() : c.ToString())).TrimStart();
+                    @*asp-route-IdMenu="@child.IdMenu"*@ 
+
+                    @if (child.MenuName == Name)
+                    {
+                        activeClass = "active blue lighten-3";
+                        menuService.SetIdMenu(child.IdMenu);
+                    }
+                    else
+                    {
+                        activeClass = "";
+                    }
+                    <div class="waves-effect border-orange menu-div @paddingStyle @activeClass">
+                        <a class="pl-4 py-2" asp-area="@parent.MenuName.Replace(" ", "")" asp-page="@child.MenuName.Replace(" ", "")" data-id="@child.IdMenu">
+                            <span class="float-left @paddingStyle">
+                                <i class="fas fa-chevron-right @paddingStyle"></i>
+                            </span>
+                            <span class="w-100 pl-2">@child.MenuName</span>
+                        </a>@* change this Gereral name *@
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+<!-- Accordion wrapper -->
+@*  @foreach (var child in parent.Links.Where(l => l.Links.Count > 0))
+    {
+        var check = parent.Links.Any(l => l.Links.Count > 0);
+    var newLinks = parent.Links.Where(l => l.Links.Count > 0).ToList();
+
+        if (check == true && child.Links.Count > 0)
+        { // HttpContextAccessorAccordion.HttpContext.Session.SetInt32("AccordionMenu", Convert.ToInt32(number + 1));
+          //new { menuLinks = parent.Links.Where(x => x.IdMenu != child.IdMenu).ToList(), firstCall = false }
+            <div class="accordion md-accordion @AccordionStyle" id="MenuLeft_@parent.IdMenu" role="tablist" aria-multiselectable="true">
+
+                @await Component.InvokeAsync("AccordionMenu", new { menuLinks = parent.Links, firstCall = false })
+            </div>
+            //break;
+
+            ////parent.Links.RemoveAll(l => l.IdMenu == child.IdMenu);
+            parent.Links.ForEach(l => l.Links.Clear());
+            ////parent.Links.RemoveAll(l => l.IdMenu == child.IdMenu);
+        }
+        else
+        {
+            @if (child.MenuName.Contains(pageRoute))
+    {
+        activeClass = "active blue lighten-3";
+    }
+            else
+            {
+                activeClass = "";
+            }
+            <div class="waves-effect border-orange menu-div">
+                <a class="pl-4 py-2 @activeClass" asp-area="@parent.MenuName" asp-page="@child.MenuName"><span class="w-100">@child.MenuName</span></a>
+            </div>
+        }
+    } *@
