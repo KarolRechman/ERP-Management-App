@@ -1,0 +1,153 @@
+@model NewOPAL.Models.Table
+
+@inject ITranslationService translationServiceSelect
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessorTable
+@{
+
+
+    //Html.Assets().Styles.Add("/NewOPAL/lib/MDB-Free_4.15.0/css/addons/datatables.min.css");
+    //Html.Assets().Styles.Add("/NewOPAL/lib/MDB-Free_4.15.0/css/addons/datatables-select.min.css");
+
+
+    //Html.Assets().Scripts.Add("/NewOPAL/lib/MDB-Free_4.15.0/js/addons/datatables.min.js");
+    //Html.Assets().Scripts.Add("/NewOPAL/lib/MDB-Free_4.15.0/js/addons/datatables-select.min.js");
+
+    int? Theme = HttpContextAccessorTable.HttpContext.Session.GetInt32("data-theme");
+    string DarkTable = "";
+    string DarkCard = "";
+    int? LanguageId = translationServiceSelect.GetLanguageId();
+    if (Theme == 1)
+    {
+        DarkTable = "table-dark";
+        DarkCard = "special-color-dark";
+    }
+    else
+    {
+        DarkTable = "";
+        DarkCard = "";
+    }
+    List<Column> columnsHidden = null;
+    if (Model.Columns != null)
+    {
+        columnsHidden = Model.Columns.Where(c => c.Hidden == true).ToList();
+    }
+
+    //var hideColumns = Model.Columns.Where(c => c.Hidden == true).ToList();
+}
+
+
+@if (Model.Columns != null)
+{
+    <div class="@Model.Styles.DivClass @DarkCard">
+        <div class=" blue-gradient p-2 mb-3 d-flex justify-content-between tableHeader align-items-center z-depth-2">
+
+            <div>
+                <button type="button" class="btn btn-outline-white btn-sm px-2">
+                    <i class="fas fa-th-large mt-0"></i>
+                </button>
+            </div>
+
+            <span class="white-text Translation font-weight-bold TableHeaderFont">@translationServiceSelect.TranslateWord(LanguageId, ViewBag.labelTable)</span>
+
+            <div>
+                @*<button type="button" class="btn btn-outline-white btn-sm px-2">
+                        <i class="fas fa-pencil-alt mt-0"></i>
+                    </button>*@
+                <button type="button" class="btn btn-danger btn-sm font-weight-bold px-2" id="DeleteFromTable_@ViewBag.labelTable">
+                    <span class="Translation">@translationServiceSelect.TranslateWord(LanguageId, "Delete")</span>&nbsp;
+                    <i class="fa x2 far fa-trash-alt mt-0"></i>
+                </button>
+            </div>
+
+        </div>
+        <div class="scroll-TBody @DarkCard">
+            <table class="@Model.Styles.TableClass @DarkTable">
+                <!-- Table head -->
+                <thead class="@Model.Styles.TheadClass">
+                    <tr class="@Model.Styles.TheadTrClass">
+
+                        @foreach (var column in Model.Columns)
+                        {
+                            string IdName = ViewBag.labelTable + "th_" + column.Id.ToString();
+
+                            if (column.Hidden == true)
+                            {
+                                <th id="@IdName" hidden class="@Model.Styles.ThClass">
+                                    @column.Name
+                                </th>
+                            }
+                            else
+                            {
+                                <th id="@IdName" class="font-weight-bold">
+                                    <span class="Translation">@translationServiceSelect.TranslateWord(LanguageId, column.Name)</span>
+                                </th>
+                            }
+                        }
+                    </tr>
+                </thead>
+                <!-- Table head -->
+                <!-- Table body -->
+                <tbody class="@Model.Styles.TbodyClass">
+
+                    @{ int rowNumber = 1; }
+
+                    @foreach (var item in Model.Items)
+                    {
+                        int columnNumber = 1;
+
+                        <tr class="@Model.Styles.TbodyTrClass">
+                            @foreach (KeyValuePair<string, object> kvp in item)
+                            {
+                                string hidden = "";
+                                string IdName = ViewBag.labelTable + "td_" + kvp.Key + rowNumber.ToString();
+                                //var ThisColumn = (Column)(hideColumns.Where(c=>c.Id == columnNumber && c.Hidden == true)).FirstOrDefault();
+
+                                @if ((Column)(columnsHidden.Where(c => c.Id == columnNumber && c.Hidden == true)).FirstOrDefault() != null)
+                                {
+                                    hidden = "hidden";
+                                }
+                                else
+                                {
+                                    hidden = "";
+                                }
+
+                                @if (kvp.Value.GetType().FullName.Contains("Bool"))
+                                {
+                                    string check = "";
+
+                                    @if (Convert.ToBoolean(kvp.Value) == true)
+                                    {
+                                        check = "checked";
+                                    }
+                                    else
+                                    {
+                                        check = "";
+                                    }
+
+                                    <td scope="row" @hidden>
+                                        <!-- Default unchecked -->
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="@IdName" @check>
+                                            <label class="custom-control-label" for="@IdName"></label>
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td class="@Model.Styles.TbodyTdClass" contenteditable="true" id="@IdName" @hidden>@kvp.Value</td>
+                                }
+                                columnNumber = columnNumber + 1;
+                            }
+                        </tr>
+
+                        rowNumber = rowNumber + 1;
+                    }
+
+                </tbody>
+                <!-- Table body -->
+            </table>
+            <!-- Table  -->
+        </div>
+    </div>
+}
+
