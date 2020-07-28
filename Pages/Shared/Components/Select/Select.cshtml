@@ -1,0 +1,22 @@
+@model List<Words>
+
+@inject ITranslationService translationServiceSelect
+
+@if (Model != null)
+{
+    string IdName = ViewBag.labelSelect.Replace(" ", "").ToString();
+
+    <div class="text-center my-1">
+        <label class="font-weight-bold" id="@IdName-SelectLabel">
+            <span class="Translation">@translationServiceSelect.TranslateWord(translationServiceSelect.GetLanguageId(), ViewBag.labelSelect)</span>
+        </label>
+        <select id="@IdName-SelectList" name="@IdName" class="selectpicker mb-2" data-width="100%" data-container="body" data-live-search="true">
+            @foreach (var option in Model)
+            {
+                <option value="@option.Id">
+                    @option.Text
+                </option>
+            }
+        </select>
+    </div>
+}
