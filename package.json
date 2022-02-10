@@ -16,7 +16,7 @@
     "grunt-replace": "1.0.1",
     "grunt-sass": "3.1.0",
     "grunt-tinyimg": "1.0.0",
-    "node-sass": "^4.14.1"
+    "node-sass": "^7.0.0"
   },
   "dependencies": {}
 }
